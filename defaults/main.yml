@@ -1,0 +1,9 @@
+---
+# The URI is mandatory
+#racktables_uri:
+
+racktables_user:
+racktables_password:
+
+# Update the hw_type attribute? true/false
+racktables_update_hw_type: true

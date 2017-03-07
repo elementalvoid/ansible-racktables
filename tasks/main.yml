@@ -1,0 +1,28 @@
+---
+- name: get facts
+  command: facter
+  when: racktables_client | bool
+  register: facts
+  changed_when: false
+  tags: racktables
+- name: upload facts to racktables
+  uri:
+    url: "{{ racktables_uri | mandatory }}/index.php?module=redirect&page=depot&tab=facter&op=Update&update_hw_type={{ racktables_update_hw_type | lower }}"
+    method: POST
+    force_basic_auth: "{{ racktables_user == '' | ternary('false', 'true') }}"
+    user: "{{ racktables_user }}"
+    password: "{{ racktables_password }}"
+    status_code: 302
+    headers:
+      Content-Type: "multipart/form-data; boundary=AaB03x"
+    body: |
+      --AaB03x
+      Content-Disposition: form-data; name="userfile"; filename="facts.yml"
+      Content-Type: text/plain
+
+      {{ facts.stdout }}
+      --AaB03x
+  when: racktables_client | bool
+  delegate_to: localhost
+  changed_when: false
+  tags: racktables
